@@ -47,7 +47,7 @@ export default function Home() {
   // Configure turndown for better Markdown output
   turndownService.addRule("strikethrough", {
     filter: ["del", "s", "strike"],
-    replacement: (content) => `~~${content}~~`,
+    replacement: (content: string) => `~~${content}~~`,
   });
 
   const editor = useEditor({
