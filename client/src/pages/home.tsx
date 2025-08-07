@@ -46,7 +46,7 @@ export default function Home() {
 
   // Configure turndown for better Markdown output
   turndownService.addRule("strikethrough", {
-    filter: ["del", "s", "strike"],
+    filter: ["del", "s"],
     replacement: (content: string) => `~~${content}~~`,
   });
 
