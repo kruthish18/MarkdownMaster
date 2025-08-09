@@ -35,19 +35,45 @@ export default function Home() {
   const [markdownContent, setMarkdownContent] = useState("");
   const { toast } = useToast();
 
-  // Initialize TurndownService
+  // Initialize TurndownService with proper configuration
   const turndownService = new TurndownService({
     codeBlockStyle: "fenced",
     fence: "```",
     emDelimiter: "*",
     strongDelimiter: "**",
     linkStyle: "inlined",
+    bulletListMarker: "-",
+    headingStyle: "atx",
   });
 
   // Configure turndown for better Markdown output
   turndownService.addRule("strikethrough", {
     filter: ["del", "s"],
     replacement: (content: string) => `~~${content}~~`,
+  });
+
+  // Ensure proper heading conversion
+  turndownService.addRule("heading", {
+    filter: ["h1", "h2", "h3", "h4", "h5", "h6"],
+    replacement: (content: string, node: any) => {
+      const level = parseInt(node.nodeName.charAt(1));
+      const prefix = "#".repeat(level);
+      return `\n${prefix} ${content}\n\n`;
+    },
+  });
+
+  // Ensure proper list conversion
+  turndownService.addRule("listItem", {
+    filter: "li",
+    replacement: (content: string, node: any) => {
+      const parent = node.parentNode;
+      if (parent.nodeName === "OL") {
+        const index = Array.prototype.indexOf.call(parent.children, node) + 1;
+        return `${index}. ${content}\n`;
+      } else {
+        return `- ${content}\n`;
+      }
+    },
   });
 
   const editor = useEditor({
